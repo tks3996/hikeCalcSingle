@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Appraisal Form</title>
+    <style>
+        ::-webkit-scrollbar {
+            width: 2px;
+            height: 2px;
+            background-color: #e1e9ff;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(25deg, #667eea, #1f2a44);
+        }
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #2d3748;
+            overflow: hidden;
+        }
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr auto;
+            width: 100%;
+            max-width: 1440px;
+            height: calc(100vh - 20px);
+            gap: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            background: #ffffff;
+            overflow: hidden;
+            position: relative;
+        }
+        .form-container {
+            grid-column: 1 / 2;
+            grid-row: 1 / 4;
+            padding: 25px;
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            overflow-y: auto;
+        }
+        .graph-container {
+            grid-column: 2 / 3;
+            grid-row: 1 / 2;
+            padding: 25px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            max-height: 100%;
+            overflow-y: auto;
+        }
+        .result-list {
+            grid-column: 2 / 3;
+            grid-row: 2 / 3;
+            padding: 5px 25px;
+            background: #ffffff;
+            max-height: 100%;
+            overflow-y: auto;
+        }
+        .button-container {
+            grid-column: 1 / 3;
+            grid-row: 4 / 4;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 20px;
+            background: #f9fafb;
+            border-top: 1px solid #e2e8f0;
+        }
+        h2 {
+            font-size: 1.5em;
+            margin: 0 0 15px;
+            text-align: center;
+            color: #1f2a44;
+            font-weight: 700;
+            background: linear-gradient(90deg, #667eea, #1f2a44);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.95em;
+            margin-bottom: 6px;
+            color: #4a5568;
+            display: block;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.95em;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background: #f9fafb;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 6px rgba(102, 126, 234, 0.3);
+        }
+        select {
+            appearance: none;
+            cursor: pointer;
+        }
+        textarea {
+            height: 60px;
+            resize: vertical;
+        }
+        .rating-input {
+            width: 100%;
+        }
+        .section {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f9fafb;
+            border-left: 4px solid #667eea;
+            border-radius: 6px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
+        }
+        .section h3 {
+            font-size: 1.2em;
+            margin: 0 0 10px;
+            color: #1f2a44;
+            font-weight: 600;
+        }
+        .section p {
+            font-size: 0.9em;
+            color: #718096;
+            margin: 0 0 10px;
+        }
+        .experience-group {
+            display: flex;
+            gap: 10px;
+        }
+        .experience-group div {
+            flex: 1;
+        }
+        button {
+            background: linear-gradient(90deg, #28a745, #218838);
+            color: white;
+            padding: 12px;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 0.95em;
+            font-weight: 600;
+            text-transform: capitalize;
+            flex: 1;
+            transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background: linear-gradient(90deg, #218838, #1e7e34);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+        }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        #clearButton {
+            background: linear-gradient(90deg, #e53e3e, #c53030);
+        }
+        #clearButton:hover {
+            background: linear-gradient(90deg, #c53030, #b22020);
+        }
+        canvas {
+            width: 100% !important;
+            max-height: 250px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        #overallRatingChart {
+            margin-top: 10px;
+            max-height: 80px;
+        }
+        .overall-rating-label {
+            font-size: 1em;
+            margin-top: 10px;
+            text-align: center;
+            font-weight: 600;
+            color: #1f2a44;
+        }
+        .result-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .result-list li {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9em;
+            color: #2d3748;
+            line-height: 1.5;
+        }
+        .result-list li:last-child {
+            border-bottom: none;
+        }
+        #notification {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            display: none;
+            z-index: 1000;
+            transition: opacity 0.5s ease-in-out;
+        }
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto auto;
+                height: auto;
+            }
+            .form-container {
+                grid-column: 1 / 2;
+                grid-row: 1 / 2;
+            }
+            .graph-container {
+                grid-column: 1 / 2;
+                grid-row: 2 / 3;
+                max-height: none;
+            }
+            .result-list {
+                grid-column: 1 / 2;
+                grid-row: 3 / 4;
+                max-height: none;
+            }
+            .button-container {
+                grid-column: 1 / 2;
+                grid-row: 4 / 5;
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        @media (print) {
+            body {
+                background: none;
+                padding: 0;
+            }
+            .main-container {
+                display: block;
+                box-shadow: none;
+                border: none;
+                max-width: none;
+                width: 100%;
+            }
+            .form-container, .graph-container, .result-list {
+                max-height: none;
+                border: none;
+                box-shadow: none;
+                padding: 15px;
+                width: 100%;
+            }
+            .button-container {
+                display: none;
+            }
+            canvas {
+                max-height: 250px;
+                width: 100%;
+            }
+            #notification {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div id="notification">Form Saved Successfully!</div>
+        <div class="form-container" id="appraisal-form">
+            <h2>Employee Appraisal Form</h2>
+            <label for="employeeName">Employee Name:</label>
+            <input type="text" id="employeeName" placeholder="Enter Employee Name">
+
+            <label for="designation">Designation:</label>
+            <select id="designation" name="designation">
+                <option value="" disabled selected>Select Designation</option>
+                <option value="Junior UI Developer">Junior UI Developer</option>
+                <option value="Mid-Level UI Developer">Mid-Level UI Developer</option>
+                <option value="Senior UI Developer">Senior UI Developer</option>
+                <option value="Expert Senior UI Developer">Expert Senior UI Developer</option>
+                <option value="Team Lead - UI Developer">Team Lead - UI Developer</option>
+                <option value="Technical Resource - UI Developer">Technical Resource - UI Developer</option>
+            </select>
+
+            <div class="experience-group">
+                <div>
+                    <label for="employeeId">Employee ID (Optional):</label>
+                    <input type="text" id="employeeId" placeholder="Enter Employee ID">
+                </div>
+                <div>
+                    <label for="currentSalary">Current Salary (₹ lakhs):</label>
+                    <input type="number" id="currentSalary" min="0" step="0.1" placeholder="Enter current salary">
+                </div>
+            </div>
+            <div class="experience-group">
+                <div>
+                    <label for="years">Years of Experience:</label>
+                    <input type="number" id="years" min="0" step="1" placeholder="Enter years">
+                </div>
+                <div>
+                    <label for="months">Months of Experience:</label>
+                    <input type="number" id="months" min="0" max="11" step="1" placeholder="Enter months">
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>1️⃣ 360-Degree Feedback</h3>
+                <p>Holistic evaluation from multiple sources.</p>
+                <label>Feedback IRP/Manager:</label>
+                <input type="number" class="rating-input" max="10" min="0" placeholder="Out of 10">
+                <textarea placeholder="Remarks"></textarea>
+            </div>
+
+            <div class="section">
+                <h3>2️⃣ KPI-Based Appraisal 📈</h3>
+                <p>Specific and quantifiable goals.</p>
+                <label>Code Quality:</label>
+                <input type="number" class="rating-input" max="10" min="0" placeholder="Out of 10">
+                <textarea placeholder="Remarks"></textarea>
+                <label>Project Delivery:</label>
+                <input type="number" class="rating-input" max="10" min="0" placeholder="Out of 10">
+                <textarea placeholder="Remarks"></textarea>
+                <label>Innovation:</label>
+                <input type="number" class="rating-input" max="10" min="0" placeholder="Out of 10">
+                <textarea placeholder="Remarks"></textarea>
+                <label>Collaboration:</label>
+                <input type="number" class="rating-input" max="10" min="0" placeholder="Out of 10">
+                <textarea placeholder="Remarks"></textarea>
+                <label>Manager Satisfaction:</label>
+                <input type="number" class="rating-input" max="10" min="0" placeholder="Out of 10">
+                <textarea placeholder="Remarks"></textarea>
+                <label>Adaptability:</label>
+                <input type="number" class="rating-input" max="10" min="0" placeholder="Out of 10">
+                <textarea placeholder="Remarks"></textarea>
+            </div>
+
+            <div class="section">
+                <h3>3️⃣ OKR Method 🎯</h3>
+                <p>Measurable goals for performance.</p>
+                <label>Website Performance:</label>
+                <input type="number" class="rating-input" max="10" min="0" placeholder="Out of 10">
+                <textarea placeholder="Remarks"></textarea>
+                <label>Code Validation:</label>
+                <input type="number" class="rating-input" max="10" min="0" placeholder="Out of 10">
+                <textarea placeholder="Remarks"></textarea>
+                <label>Unit Testing:</label>
+                <input type="number" class="rating-input" max="10" min="0" placeholder="Out of 10">
+                <textarea placeholder="Remarks"></textarea>
+            </div>
+
+            <div class="section">
+                <h3>4️⃣ BARS Method 📊</h3>
+                <p>Behavior-based evaluation.</p>
+                <label>Discipline / Behavioral Attributes:</label>
+                <input type="number" class="rating-input" max="10" min="0" placeholder="Out of 10">
+                <textarea placeholder="Remarks"></textarea>
+                <label>Dedication / Punctuality:</label>
+                <input type="number" class="rating-input" max="10" min="0" placeholder="Out of 10">
+                <textarea placeholder="Remarks"></textarea>
+                <label>Attendance:</label>
+                <input type="number" class="rating-input" max="10" min="0" placeholder="Out of 10">
+                <textarea placeholder="Remarks"></textarea>
+                <label>Team Support:</label>
+                <input type="number" class="rating-input" max="10" min="0" placeholder="Out of 10">
+                <textarea placeholder="Remarks"></textarea>
+                <label>Cultural Participation:</label>
+                <input type="number" class="rating-input" max="10" min="0" placeholder="Out of 10">
+                <textarea placeholder="Remarks"></textarea>
+            </div>
+        </div>
+
+        <div class="graph-container">
+            <h2>Ratings Overview</h2>
+            <canvas id="ratingChart"></canvas>
+            <canvas id="overallRatingChart"></canvas>
+            <div class="overall-rating-label" id="overallRatingLabel"></div>
+        </div>
+
+        <div class="result-list" id="resultList">
+            <h2>Calculated Salaries</h2>
+            <ul id="salaryList"></ul>
+        </div>
+
+        <div class="button-container">
+            <button id="saveAsPdfButton" onclick="printDiv('appraisal-form')" disabled>Save as PDF</button>
+            <button onclick="submitForm()">Submit and Calculate Salary</button>
+            <button id="clearButton" onclick="clearForm()">Clear Form</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function getRatingColor(rating) {
+            const colors = [
+                'rgba(239, 68, 68, 0.8)',   
+                'rgba(248, 113, 113, 0.8)', 
+                'rgba(251, 146, 60, 0.8)',  
+                'rgba(253, 186, 116, 0.8)', 
+                'rgba(252, 211, 77, 0.8)',  
+                'rgba(255, 238, 88, 0.8)',  
+                'rgba(190, 242, 100, 0.8)', 
+                'rgba(163, 230, 53, 0.8)',  
+                'rgba(132, 204, 22, 0.8)',  
+                'rgba(101, 163, 13, 0.8)',  
+                'rgba(74, 222, 128, 0.8)'   
+            ];
+            return colors[Math.round(rating)] || 'rgba(209, 213, 219, 0.8)';
+        }
+
+        function getRatingBorderColor(rating) {
+            const colors = [
+                'rgba(239, 68, 68, 1)',   
+                'rgba(248, 113, 113, 1)', 
+                'rgba(251, 146, 60, 1)',  
+                'rgba(253, 186, 116, 1)', 
+                'rgba(252, 211, 77, 1)',  
+                'rgba(255, 238, 88, 1)',  
+                'rgba(190, 242, 100, 1)', 
+                'rgba(163, 230, 53, 1)',  
+                'rgba(132, 204, 22, 1)',  
+                'rgba(101, 163, 13, 1)',  
+                'rgba(74, 222, 128, 1)'   
+            ];
+            return colors[Math.round(rating)] || 'rgba(209, 213, 219, 1)';
+        }
+
+        function getPerformanceLabel(rating) {
+            if (rating <= 2) return "Worst";
+            if (rating <= 4) return "Bad";
+            if (rating <= 6) return "Good";
+            if (rating <= 8) return "Better";
+            return "Best";
+        }
+
+        const ctx = document.getElementById('ratingChart').getContext('2d');
+        const ratingChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    'IRP Feedback', 'Code Quality', 'Project Delivery', 'Innovation', 'Collaboration', 
+                    'Mgr Satisfaction', 'Adaptability', 'Website Perf', 'Code Validation', 'Unit Testing',
+                    'Behavior', 'Dedication', 'Attendance', 'Team Support', 'Cultural'
+                ],
+                datasets: [{
+                    label: 'Ratings (0-10)',
+                    data: Array(15).fill(0),
+                    backgroundColor: Array(15).fill(getRatingColor(0)),
+                    borderColor: Array(15).fill(getRatingBorderColor(0)),
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    barThickness: 12
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        title: { display: true, text: 'Rating', font: { size: 12 } },
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                    },
+                    x: { grid: { display: false } }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { size: 12 },
+                        bodyFont: { size: 12 }
+                    }
+                }
+            }
+        });
+
+        const ctxOverall = document.getElementById('overallRatingChart').getContext('2d');
+        const overallRatingChart = new Chart(ctxOverall, {
+            type: 'bar',
+            data: {
+                labels: ['Overall Rating'],
+                datasets: [{
+                    label: 'Average Rating',
+                    data: [0],
+                    backgroundColor: getRatingColor(0),
+                    borderColor: getRatingBorderColor(0),
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    barThickness: 20
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 10,
+                        title: { 
+                            display: true, 
+                            text: 'Rating', 
+                            font: { size: 12, weight: '600' },
+                            color: '#1f2a44'
+                        },
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        ticks: { font: { size: 10 }, color: '#4a5568' }
+                    },
+                    y: { 
+                        title: { 
+                            display: true, 
+                            text: 'Average', 
+                            font: { size: 12, weight: '600' },
+                            color: '#1f2a44'
+                        },
+                        grid: { display: false },
+                        ticks: { font: { size: 10 }, color: '#4a5568' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { 
+                        enabled: true,
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: { size: 12 },
+                        bodyFont: { size: 12 }
+                    }
+                },
+                maintainAspectRatio: false
+            }
+        });
+
+        window.onload = function() {
+            const formData = JSON.parse(sessionStorage.getItem('appraisalFormData'));
+            if (formData) {
+                document.getElementById('employeeName').value = formData.employeeName || '';
+                document.getElementById('designation').value = formData.designation || '';
+                document.getElementById('employeeId').value = formData.employeeId || '';
+                document.getElementById('years').value = formData.years || '';
+                document.getElementById('months').value = formData.months || '';
+                document.getElementById('currentSalary').value = formData.currentSalary || '';
+                const inputs = document.querySelectorAll('.rating-input');
+                const textareas = document.querySelectorAll('textarea');
+                inputs.forEach((input, index) => {
+                    input.value = formData.ratings && formData.ratings[index] ? formData.ratings[index] : '';
+                });
+                textareas.forEach((textarea, index) => {
+                    textarea.value = formData.remarks && formData.remarks[index] ? formData.remarks[index] : '';
+                });
+                updateCharts();
+            }
+
+            const salaryResults = JSON.parse(localStorage.getItem('salaryResults')) || [];
+            displaySalaryResults(salaryResults);
+
+            const hasSalaryResults = localStorage.getItem('hasReturnedFromSalaryCalc') === 'true' && salaryResults.length > 0;
+            document.getElementById('saveAsPdfButton').disabled = !hasSalaryResults;
+        };
+
+        function saveFormData() {
+            const employeeName = document.getElementById('employeeName').value;
+            const designation = document.getElementById('designation').value;
+            const employeeId = document.getElementById('employeeId').value;
+            const years = document.getElementById('years').value;
+            const months = document.getElementById('months').value;
+            const currentSalary = document.getElementById('currentSalary').value;
+            const ratings = Array.from(document.querySelectorAll('.rating-input')).map(input => input.value);
+            const remarks = Array.from(document.querySelectorAll('textarea')).map(textarea => textarea.value);
+
+            const formData = {
+                employeeName: employeeName,
+                designation: designation,
+                employeeId: employeeId,
+                years: years,
+                months: months,
+                currentSalary: currentSalary,
+                ratings: ratings,
+                remarks: remarks
+            };
+            sessionStorage.setItem('appraisalFormData', JSON.stringify(formData));
+            updateCharts();
+        }
+
+        document.querySelectorAll('input, select, textarea').forEach(element => {
+            element.addEventListener('input', saveFormData);
+        });
+
+        function updateCharts() {
+            const ratings = Array.from(document.querySelectorAll('.rating-input'))
+                .map(input => parseFloat(input.value) || 0);
+            const averageRating = calculateAverageRating();
+
+            ratingChart.data.datasets[0].data = ratings;
+            ratingChart.data.datasets[0].backgroundColor = ratings.map(rating => getRatingColor(rating));
+            ratingChart.data.datasets[0].borderColor = ratings.map(rating => getRatingBorderColor(rating));
+            ratingChart.update();
+
+            overallRatingChart.data.datasets[0].data = [averageRating || 0];
+            overallRatingChart.data.datasets[0].backgroundColor = getRatingColor(averageRating || 0);
+            overallRatingChart.data.datasets[0].borderColor = getRatingBorderColor(averageRating || 0);
+            overallRatingChart.update();
+
+            document.getElementById('overallRatingLabel').textContent = 
+                averageRating ? `Overall Rating: ${averageRating} (${getPerformanceLabel(averageRating)})` : 'Overall Rating: N/A';
+        }
+
+        function calculateAverageRating() {
+            const ratings = Array.from(document.querySelectorAll('.rating-input'))
+                .map(input => parseFloat(input.value) || 0)
+                .filter(value => value > 0);
+            const total = ratings.reduce((sum, rating) => sum + rating, 0);
+            const average = ratings.length > 0 ? (total / ratings.length).toFixed(1) : null;
+            return average;
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            notification.style.opacity = '1';
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 500);
+            }, 1000);
+        }
+
+        function printDiv(divName) {
+            const printContents = document.getElementById(divName).innerHTML;
+            const graphContents = document.querySelector('.graph-container').innerHTML;
+            const resultContents = document.getElementById('resultList').innerHTML;
+            const originalContents = document.body.innerHTML;
+
+            const printWindow = window.open('', '', 'width=800,height=600');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Employee Appraisal Report</title>
+                    <style>
+                        body {
+                            font-family: 'Segoe UI', Arial, sans-serif;
+                            margin: 20px;
+                            color: #333;
+                        }
+                        h2 {
+                            font-size: 1.8em;
+                            text-align: center;
+                            color: #1f2a44;
+                            font-weight: 600;
+                            margin-bottom: 20px;
+                        }
+                        label {
+                            font-weight: 600;
+                            font-size: 0.95em;
+                            color: #2d3748;
+                            display: block;
+                            margin-bottom: 5px;
+                        }
+                        input, select, textarea {
+                            width: 100%;
+                            padding: 8px;
+                            margin-bottom: 10px;
+                            border: 1px solid #d1d5db;
+                            border-radius: 4px;
+                            font-size: 0.9em;
+                            box-sizing: border-box;
+                        }
+                        .section {
+                            margin-bottom: 15px;
+                            padding: 15px;
+                            border-left: 4px solid #667eea;
+                            background: #f9fafb;
+                            border-radius: 6px;
+                        }
+                        .section h3 {
+                            font-size: 1.3em;
+                            margin: 0 0 10px;
+                            color: #1f2a44;
+                            font-weight: 600;
+                        }
+                        .section p {
+                            font-size: 0.9em;
+                            color: #718096;
+                            margin: 0 0 10px;
+                        }
+                        .experience-group {
+                            display: flex;
+                            gap: 10px;
+                        }
+                        .experience-group div {
+                            flex: 1;
+                        }
+                        .graph-container {
+                            text-align: center;
+                            margin: 20px 0;
+                        }
+                        canvas {
+                            max-width: 100%;
+                            height: auto;
+                        }
+                        .overall-rating-label {
+                            font-size: 1em;
+                            margin-top: 15px;
+                            text-align: center;
+                            font-weight: 600;
+                            color: #1f2a44;
+                        }
+                        .result-list ul {
+                            list-style: none;
+                            padding: 0;
+                        }
+                        .result-list li {
+                            padding: 10px;
+                            border-bottom: 1px solid #e2e8f0;
+                            font-size: 0.9em;
+                            color: #2d3748;
+                        }
+                        .result-list li:last-child {
+                            border-bottom: none;
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${printContents}
+                    <div class="graph-container">${graphContents}</div>
+                    ${resultContents}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+            localStorage.removeItem('hasReturnedFromSalaryCalc');
+            showNotification('PDF Saved Successfully!');
+        }
+
+        function submitForm() {
+            const averageRating = calculateAverageRating();
+            const employeeName = document.getElementById('employeeName').value;
+            const designation = document.getElementById('designation').value;
+            const employeeId = document.getElementById('employeeId').value;
+            const years = document.getElementById('years').value;
+            const months = document.getElementById('months').value;
+            const currentSalary = document.getElementById('currentSalary').value;
+
+            localStorage.setItem('appraisalData', JSON.stringify({
+                employeeName: employeeName,
+                designation: designation,
+                employeeId: employeeId,
+                years: years,
+                months: months,
+                currentSalary: currentSalary,
+                averageRating: averageRating
+            }));
+
+            localStorage.setItem('hasReturnedFromSalaryCalc', 'false');
+            showNotification('Form Saved Successfully!');
+            setTimeout(() => {
+                window.location.href = 'estimateSalCal.html';
+            }, 1000);
+        }
+
+        function clearForm() {
+            document.getElementById('employeeName').value = '';
+            document.getElementById('designation').value = '';
+            document.getElementById('employeeId').value = '';
+            document.getElementById('years').value = '';
+            document.getElementById('months').value = '';
+            document.getElementById('currentSalary').value = '';
+            document.querySelectorAll('.rating-input').forEach(input => input.value = '');
+            document.querySelectorAll('textarea').forEach(textarea => textarea.value = '');
+
+            sessionStorage.removeItem('appraisalFormData');
+            localStorage.removeItem('salaryResults');
+            localStorage.removeItem('hasReturnedFromSalaryCalc');
+            document.getElementById('saveAsPdfButton').disabled = true;
+            ratingChart.data.datasets[0].data = Array(15).fill(0);
+            ratingChart.data.datasets[0].backgroundColor = Array(15).fill(getRatingColor(0));
+            ratingChart.data.datasets[0].borderColor = Array(15).fill(getRatingBorderColor(0));
+            ratingChart.update();
+            overallRatingChart.data.datasets[0].data = [0];
+            overallRatingChart.data.datasets[0].backgroundColor = getRatingColor(0);
+            overallRatingChart.data.datasets[0].borderColor = getRatingBorderColor(0);
+            overallRatingChart.update();
+            document.getElementById('overallRatingLabel').textContent = 'Overall Rating: N/A';
+            displaySalaryResults([]);
+            showNotification('Form Cleared Successfully!');
+        }
+
+        function displaySalaryResults(results) {
+            const salaryList = document.getElementById('salaryList');
+            salaryList.innerHTML = '';
+            if (!Array.isArray(results) || results.length === 0) {
+                salaryList.innerHTML = '<li>No salary results available.</li>';
+                return;
+            }
+            results.forEach(result => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <strong>Name:</strong> ${result.employeeName || 'N/A'}<br>
+                    <strong>Designation:</strong> ${result.designation || 'N/A'}<br>
+                    ${result.employeeId ? `<strong>Employee ID:</strong> ${result.employeeId}<br>` : ''}
+                    <strong>Experience:</strong> ${result.years || 0} yrs, ${result.months || 0} months<br>
+                    ${result.currentSalary ? '<strong>Current Salary:</strong> ₹' + result.currentSalary.toLocaleString('en-IN') + '<br>' : ''}
+                    <strong>Updated Salary:</strong> ₹${(result.totalSalary || 0).toLocaleString('en-IN')}<br>
+                    <strong>Increment:</strong> ₹${(result.increment || 0).toLocaleString('en-IN')}<br>
+                    <strong>Percentage:</strong> ${result.percentage || 0}%<br>
+                    <strong>Rating:</strong> ${result.averageRating || 'N/A'}${result.promoted ? '<br><strong>Promoted:</strong> Yes' : ''}
+                `;
+                salaryList.appendChild(li);
+            });
+            const hasSalaryResults = localStorage.getItem('hasReturnedFromSalaryCalc') === 'true' && results.length > 0;
+            document.getElementById('saveAsPdfButton').disabled = !hasSalaryResults;
+        }
+    </script>
+</body>
+</html>

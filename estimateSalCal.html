@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Salary Hike Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2, #4a4063);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 97vh;
+            color: #1a202c;
+            overflow-x: hidden;
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 1960px;
+            max-height: 85vh;
+            overflow: hidden;
+            position: relative;
+            transition: box-shadow 0.3s ease;
+        }
+        .container:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+        .left-section, .middle-section, .right-section {
+            padding: 20px;
+            transition: background 0.3s ease;
+            overflow-y: auto;
+        }
+        .left-section {
+            width: 30%;
+            background: linear-gradient(135deg, #ffffff, #f7fafc);
+            border-right: 2px solid #e2e8f0;
+        }
+        .middle-section {
+            width: 35%;
+            background: #ffffff;
+        }
+        .right-section {
+            width: 30%;
+            background: linear-gradient(135deg, #ffffff, #f7fafc);
+            border-left: 2px solid #e2e8f0;
+        }
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            color: #2d3748;
+            text-align: center;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        h2 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            color: #4a5568;
+            text-align: center;
+            font-weight: 600;
+        }
+        .ratio-list {
+            font-size: 1em;
+            color: #2d3748;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #edf2f7;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .ratio-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .ratio-list li {
+            margin-bottom: 10px;
+            padding-left: 18px;
+            position: relative;
+        }
+        .ratio-list li::before {
+            content: "•";
+            color: #667eea;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        .employee-info {
+            margin-bottom: 20px;
+            font-size: 1em;
+            color: #2d3748;
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+            margin-top: 15px;
+        }
+        .input-group div {
+            position: relative;
+        }
+        label {
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #4a5568;
+            display: block;
+        }
+        input[type="number"] {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background: #ffffff;
+        }
+        input[type="number"]:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.3);
+            outline: none;
+        }
+        input[type="number"]:invalid {
+            border-color: #e53e3e;
+        }
+        button {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s, box-shadow 0.3s;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            width: 48%;
+        }
+        button:hover {
+            background: linear-gradient(90deg, #5a67d8, #644e89);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.3);
+        }
+        button.back-btn {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+        }
+        button.back-btn:hover {
+            background: linear-gradient(90deg, #27ae60, #219653);
+            box-shadow: 0 6px 15px rgba(46, 204, 113, 0.3);
+        }
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #1f2a44;
+            text-align: center;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 10px;
+            border-left: 4px solid #2ecc71;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .error {
+            color: #e53e3e;
+            font-size: 1em;
+            margin-top: 15px;
+            text-align: center;
+            padding: 10px;
+            background: #fee2e2;
+            border-radius: 8px;
+            border-left: 4px solid #e53e3e;
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        canvas {
+            width: 100% !important;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+        #marketPieChart {
+            height: 250px;
+        }
+        #marketChart {
+            height: 350px;
+        }
+        .star-rating {
+            margin-top: 5px;
+            text-align: left;
+            font-size: 35px;
+        }
+        .star {
+            color: #ccc;
+            display: inline-block;
+            transition: color 0.3s;
+        }
+        canvas:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                width: 100%;
+                max-width: 100%;
+                max-height: none;
+            }
+            .left-section, .middle-section, .right-section {
+                width: 100%;
+                border-right: none;
+                border-bottom: 2px solid #e2e8f0;
+                max-height: none;
+            }
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+            button {
+                width: 48%;
+            }
+            #marketPieChart {
+                height: 250px;
+            }
+            #marketChart {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-section">
+            <h2>Pie Comparison</h2>
+            <canvas id="marketPieChart"></canvas>
+        </div>
+        <div class="middle-section">
+            <h1>IT Salary Hike Calculator</h1>
+            <div class="employee-info" id="employeeInfo"></div>
+            <form id="salaryForm">
+                <div class="input-group">
+                    <div>
+                        <label for="currentSalary">Current Salary (₹ lakhs)<span class="tooltip">💡 Enter your current annual salary in lakhs.</span></label>
+                        <input type="number" id="currentSalary" name="currentSalary" min="0" step="0.1" placeholder="e.g., 10.5" required>
+                    </div>
+                    <div>
+                        <label for="hikePercentage">Hike Percentage (%)<span class="tooltip">💡 Expected percentage increase (e.g., 10 for 10%).</span></label>
+                        <input type="number" id="hikePercentage" name="hikePercentage" min="0" step="1" placeholder="e.g., 10" required>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button type="button" onclick="calculateSalary()">Calculate Hike</button>
+                    <button type="button" class="back-btn" onclick="goBack()">Go to Appraisal Form</button>
+                </div>
+            </form>
+            <div id="result"></div>
+            <div id="error" class="error"></div>
+        </div>
+        <div class="right-section">
+            <h2>Market Insights</h2>
+            <div class="ratio-list">
+                <ul>
+                    <li>1 - 4.5 yrs: 1:2 Ratio (Junior)</li>
+                    <li>4.5 - 7.5 yrs: 1:1.8 Ratio (Mid-Level)</li>
+                    <li>7.5 - 12 yrs: 1:1.5 Ratio (Senior)</li>
+                    <li>12 - 15 yrs: 1:1.4 Ratio (Expert)</li>
+                </ul>
+            </div>
+            <canvas id="marketChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        let latestSalaryResult = null;
+        let marketChart = null;
+        let marketPieChart = null;
+
+        const modernColors = {
+            currentSalary: '#6b7280',
+            marketSalary: '#f97316',
+            afterHikeSalary: '#10b981'
+        };
+
+        function getStarColor(rating) {
+            const clampedRating = Math.max(1, Math.min(10, rating));
+            if (clampedRating <= 5) {
+                const ratio = (clampedRating - 1) / 4;
+                const r = Math.round(239 + (251 - 239) * ratio);
+                const g = Math.round(68 + (191 - 68) * ratio);
+                const b = Math.round(68 * (1 - ratio));
+                return `rgb(${r}, ${g}, ${b})`;
+            } else {
+                const ratio = (clampedRating - 5) / 5;
+                const r = Math.round(251 - (251 - 22) * ratio);
+                const g = Math.round(191 - (191 - 163) * ratio);
+                const b = Math.round(36 * (1 - ratio));
+                return `rgb(${r}, ${g}, ${b})`;
+            }
+            return 'rgb(209, 213, 219)';
+        }
+
+        function renderStarRating(containerId, rating) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const starTotal = 5;
+            const starPercentage = (rating / 10) * starTotal;
+            const starPercentageRounded = Math.floor(starPercentage);
+            const hasHalfStar = starPercentage % 1 >= 0.5;
+
+            let stars = '';
+            for (let i = 1; i <= starTotal; i++) {
+                if (i <= starPercentageRounded) {
+                    stars += `<span class="star" style="color: ${getStarColor(rating)}">★</span>`;
+                } else if (hasHalfStar && i === Math.ceil(starPercentage)) {
+                    stars += `<span class="star" style="color: ${getStarColor(rating)}; opacity: 1">★</span>`;
+                } else {
+                    stars += `<span class="star">★</span>`;
+                }
+            }
+            container.innerHTML = `${stars} <span style="font-size:25px;">(${rating || 0}/10)</span>`;
+        }
+
+        window.onload = function() {
+            const appraisalData = JSON.parse(localStorage.getItem('appraisalData'));
+            if (appraisalData) {
+                document.getElementById('employeeInfo').innerHTML = `<div style="margin-top: 5px; line-height: 30px;">
+                    <strong>Name:</strong> ${appraisalData.employeeName || 'N/A'}<br>
+                    <strong>Designation:</strong> ${appraisalData.designation || 'N/A'}<br>
+                    ${appraisalData.employeeId ? `<strong>Employee ID:</strong> ${appraisalData.employeeId}<br>` : ''}
+                    <strong>Experience:</strong> ${appraisalData.years || 0} yrs, ${appraisalData.months || 0} months<br>
+                    <strong>Total Rating:</strong> ${appraisalData.averageRating || 'N/A'}
+                    ${appraisalData.averageRating && appraisalData.averageRating !== 'N/A' ? `<div class="star-rating" id="AvgStarRating"></div>` : '<br><span>Rating is not available</span>'}</div>`;
+                document.getElementById('currentSalary').value = appraisalData.currentSalary || '';
+                renderStarRating('AvgStarRating', parseFloat(appraisalData.averageRating) || 0);
+                updateMarketCharts(appraisalData, null);
+            }
+
+            document.getElementById('currentSalary').addEventListener('input', () => {
+                const appraisalData = JSON.parse(localStorage.getItem('appraisalData')) || {};
+                appraisalData.currentSalary = document.getElementById('currentSalary').value;
+                updateMarketCharts(appraisalData, latestSalaryResult ? latestSalaryResult.totalSalary : null);
+            });
+        };
+
+        function updateMarketCharts(appraisalData, afterHikeSalary) {
+            const currentSalary = parseFloat(appraisalData.currentSalary) * 100000 || 0;
+            const totalExperience = (parseInt(appraisalData.years) || 0) + (parseInt(appraisalData.months) || 0) / 12;
+
+            const marketRatios = [
+                { range: '1 - 4.5 yrs', ratio: 2, min: 1, max: 4.5 },
+                { range: '4.5 - 7.5 yrs', ratio: 1.8, min: 4.5, max: 7.5 },
+                { range: '7.5 - 12 yrs', ratio: 1.5, min: 7.5, max: 12 },
+                { range: '12 - 15 yrs', ratio: 1.4, min: 12, max: 15 }
+            ];
+
+            const applicableRatio = marketRatios.find(r => totalExperience >= r.min && totalExperience <= r.max);
+            const marketSalary = applicableRatio ? currentSalary * applicableRatio.ratio : 0;
+
+            const labels = ['Current Salary', applicableRatio ? applicableRatio.range : 'N/A'];
+            const data = [currentSalary, marketSalary];
+            const barColors = [modernColors.currentSalary, modernColors.marketSalary];
+            const pieColors = [modernColors.currentSalary, modernColors.marketSalary];
+
+            if (afterHikeSalary) {
+                labels.push('After Hike');
+                data.push(afterHikeSalary);
+                barColors.push(modernColors.afterHikeSalary);
+                pieColors.push(modernColors.afterHikeSalary);
+            }
+
+            const barCtx = document.getElementById('marketChart');
+            if (marketChart) {
+                marketChart.destroy();
+            }
+            marketChart = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Salary (₹)',
+                        data: data,
+                        backgroundColor: barColors,
+                        borderColor: barColors,
+                        borderWidth: 1,
+                        barThickness: 20,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Salary (₹)', font: { size: 12, weight: 'bold' } },
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + value.toLocaleString('en-IN');
+                                },
+                                font: { size: 10 }
+                            }
+                        },
+                        x: {
+                            title: { display: true, text: 'Comparison', font: { size: 12, weight: 'bold' } }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: (value) => `₹${value.toLocaleString('en-IN')}`,
+                            color: '#1a202c',
+                            font: { size: 12, weight: 'bold' }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            top: 40
+                        }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: true
+                }
+            });
+
+            const pieCtx = document.getElementById('marketPieChart');
+            if (marketPieChart) {
+                marketPieChart.destroy();
+            }
+            marketPieChart = new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Salary (₹)',
+                        data: data,
+                        backgroundColor: pieColors,
+                        borderColor: pieColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'right',
+                            labels: {
+                                font: { size: 10, weight: 'bold' },
+                                color: '#2d3748',
+                                padding: 10
+                            }
+                        },
+                        datalabels: {
+                            formatter: (value) => `₹${value.toLocaleString('en-IN')}`,
+                            color: '#fff',
+                            font: { size: 12, weight: 'bold' },
+                            textAlign: 'center'
+                        }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: true
+                }
+            });
+        }
+
+        function calculateSalary() {
+            const currentSalaryInput = document.getElementById('currentSalary');
+            const hikePercentageInput = document.getElementById('hikePercentage');
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+
+            const currentSalary = parseFloat(currentSalaryInput.value) * 100000;
+            const hikePercentage = parseFloat(hikePercentageInput.value);
+
+            resultDiv.innerHTML = '';
+            errorDiv.innerHTML = '';
+
+            if (isNaN(currentSalary) || currentSalary < 0) {
+                errorDiv.innerHTML = 'Please enter a valid current salary (0 or greater).';
+                return;
+            }
+            if (isNaN(hikePercentage) || hikePercentage < 0) {
+                errorDiv.innerHTML = 'Please enter a valid hike percentage (0 or greater).';
+                return;
+            }
+
+            const estimatedSalary = currentSalary * (1 + hikePercentage / 100);
+            const increment = estimatedSalary - currentSalary;
+
+            const appraisalData = JSON.parse(localStorage.getItem('appraisalData')) || {};
+            latestSalaryResult = {
+                employeeName: appraisalData.employeeName,
+                designation: appraisalData.designation,
+                employeeId: appraisalData.employeeId,
+                years: appraisalData.years,
+                months: appraisalData.months,
+                currentSalary: currentSalary,
+                totalSalary: Math.round(estimatedSalary),
+                increment: Math.round(increment),
+                percentage: Math.round(hikePercentage),
+                averageRating: appraisalData.averageRating
+            };
+
+            updateMarketCharts(appraisalData, Math.round(estimatedSalary));
+            renderStarRating('AvgStarRating', parseFloat(appraisalData.averageRating) || 0);
+
+            resultDiv.innerHTML = `
+                <strong>Current Salary:</strong> ₹${currentSalary.toLocaleString('en-IN')}<br>
+                <strong>Predicted Salary:</strong> 
+                <span style="font-size: 24px; font-weight: bold; color: #2ecc71;">
+                    ₹${Math.round(estimatedSalary).toLocaleString('en-IN')}
+                </span> per year<br><br>
+                <strong>Hike Percentage:</strong> 
+                <span style="font-size: 20px; font-weight: bold; color: #2ecc71;">
+                    ${Math.round(hikePercentage)}%
+                </span><br>
+                <strong>Increment:</strong> 
+                <span style="font-size: 20px; color: #2ecc71;">
+                    + ₹${Math.round(increment).toLocaleString('en-IN')}
+                </span>
+            `;
+        }
+
+        function goBack() {
+            if (latestSalaryResult) {
+                localStorage.setItem('salaryResults', JSON.stringify([latestSalaryResult]));
+                localStorage.setItem('hasReturnedFromSalaryCalc', 'true');
+            }
+            window.location.href = 'appraisal-form.html';
+        }
+
+        document.querySelectorAll('.tooltip').forEach(tooltip => {
+            tooltip.style.cursor = 'pointer';
+            tooltip.addEventListener('mouseover', function() {
+                this.style.color = '#667eea';
+            });
+            tooltip.addEventListener('mouseout', function() {
+                this.style.color = 'inherit';
+            });
+        });
+
+        Chart.register(ChartDataLabels);
+    </script>
+</body>
+</html>
